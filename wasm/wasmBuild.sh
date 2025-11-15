@@ -2,7 +2,7 @@
 set -euo pipefail
 
 EMSDK="/Users/jerry/cProgram/emsdk"
-PROJECT="/Users/jerry/cProgram/raylibTest/sample0"
+PROJECT="/Users/jerry/cProgram/raylibTest/sample_audio"
 OUTDIR="out"
 RAYLIB_ROOT="/Users/jerry/cProgram/raylibTest/lib/raylib"
 RAYLIB_A=""   # 构建后自动探测
@@ -13,6 +13,7 @@ SRC_FILES=()
 USER_SRC=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --project) PROJECT="$2"; shift 2;;
     --src) SRC_FILES+=("$2"); USER_SRC=true; shift 2;;
     --resources) RESOURCE_DIR="$2"; shift 2;;
     -h|--help) echo "参数: --src FILE 可重复, --resources DIR"; exit 0;;
@@ -69,10 +70,10 @@ build_raylib_web() {
 }
 
 detect_shell() {
-  if [[ -f "$RAYLIB_ROOT/src/shell.html" ]]; then
-    SHELL_FILE="$RAYLIB_ROOT/src/shell.html"
-  elif [[ -f "$RAYLIB_ROOT/shell.html" ]]; then
-    SHELL_FILE="$RAYLIB_ROOT/shell.html"
+  if [[ -f "$RAYLIB_ROOT/src/minshell.html" ]]; then
+    SHELL_FILE="$RAYLIB_ROOT/src/minshell.html"
+  elif [[ -f "$RAYLIB_ROOT/minshell.html" ]]; then
+    SHELL_FILE="$RAYLIB_ROOT/minshell.html"
   else
     SHELL_FILE=""
   fi

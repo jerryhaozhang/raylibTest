@@ -7,8 +7,8 @@ PKG_CONFIG := $(shell command -v pkg-config 2>/dev/null)
 HB_PREFIX := $(shell brew --prefix 2>/dev/null)
 
 # 源与目标
-SRC := sample0/src/main.c
-TARGET := game
+SRC ?= sample_audio/src/main.c
+TARGET ?= game
 
 # raylib 源目录（当前项目内）
 RAYLIB_SRC_DIR := lib/raylib/src
@@ -45,15 +45,25 @@ else
   endif
 endif
 
+.PHONY: all clean debug
+
 all: $(TARGET)
+
+debug: DEBUG_TARGET := $(TARGET)_debug
+debug: CFLAGS += -g -O0
+debug: $(DEBUG_TARGET)
+
+$(DEBUG_TARGET): $(TARGET_DEPS) $(SRC)
+	$(CC) $(CFLAGS) $(RAYLIB_CFLAGS) -o $@ $(SRC) $(TARGET_DEPS) $(RAYLIB_LIBS)
 
 # 仅在需要本地构建时触发
 $(RAYLIB_NATIVE_LIB):
 	$(MAKE) -C $(RAYLIB_SRC_DIR) clean
 	$(MAKE) -C $(RAYLIB_SRC_DIR) PLATFORM=PLATFORM_DESKTOP RAYLIB_LIBTYPE=STATIC
 
-$(TARGET): $(SRC) $(TARGET_DEPS)
-	$(CC) $(CFLAGS) $(RAYLIB_CFLAGS) -o $@ $< $(TARGET_DEPS) $(RAYLIB_LIBS)
+# 支持多个源文件或单文件，通过 make SRC=... TARGET=... 指定
+$(TARGET): $(TARGET_DEPS) $(SRC)
+	$(CC) $(CFLAGS) $(RAYLIB_CFLAGS) -o $@ $(SRC) $(TARGET_DEPS) $(RAYLIB_LIBS)
 
 clean:
 	$(RM) $(TARGET)
